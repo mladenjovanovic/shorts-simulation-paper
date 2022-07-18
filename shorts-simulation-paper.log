@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.7.18)  18 JUL 2022 23:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.7.18)  18 JUL 2022 23:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -956,15 +956,15 @@ Package rerunfilecheck Info: File `shorts-simulation-paper.out' has not changed.
 (rerunfilecheck)             Checksum: 3A48377DD6E3CC2815ED606354F4C1D3;4801.
  ) 
 Here is how much of TeX's memory you used:
- 19237 strings out of 479983
- 324443 string characters out of 5886392
- 763690 words of memory out of 5000000
+ 19240 strings out of 479983
+ 324470 string characters out of 5886392
+ 763687 words of memory out of 5000000
  36567 multiletter control sequences out of 15000+600000
- 537199 words of font info for 356 fonts, out of 8000000 for 9000
+ 537438 words of font info for 358 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  87i,12n,91p,1897b,514s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.enc}</Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/courier/ucrbo8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvbo8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on shorts-simulation-paper.pdf (14 pages, 802446 bytes).
+Output written on shorts-simulation-paper.pdf (14 pages, 802447 bytes).
 PDF statistics:
  593 PDF objects out of 1000 (max. 8388607)
  529 compressed objects within 6 object streams
