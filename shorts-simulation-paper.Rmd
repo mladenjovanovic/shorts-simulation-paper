@@ -1,5 +1,5 @@
 ---
-title: "Bias in estimated short sprints profiles using timing gates due to the flying start: simulation study and proposed solutions"
+title: "Bias in estimated short sprint profiles using timing gates due to the flying start: simulation study and proposed solutions"
 preprint: true
 date: "`r Sys.Date()`"
 author: 
@@ -27,6 +27,7 @@ output:
   bookdown::pdf_book:
     base_format: rticles::peerj_article # for using bookdown features like \@ref()
     extra_dependencies: ["flafter", "float"]
+  bookdown::word_document2:
   bookdown::html_document2:
     toc: true
     toc_float: true
@@ -34,6 +35,7 @@ output:
     highlight: kate
   rticles::peerj_article: default
 link-citations: yes
+always_allow_html: true
 editor_options:
   chunk_output_type: console
 ---
@@ -550,9 +552,20 @@ not_fitted_df <- sim_res_df %>%
   select(Model, `Flying distance (m)`, `Not fitted`, Total, `Not fitted (%)`)
 ```
 
-Out of `r formatC(not_fitted_df$Total, format="f", big.mark=",", digits=0)` simulations for 0 $m$ flying distance, *estimated FD* model was not been able to be fitted for `r formatC(not_fitted_df$"Not fitted", format="f", big.mark=",", digits=0)` simulations, or `r round(not_fitted_df$"Not fitted (%)", 0)`%. These were disregarded from further analysis. 
+Table \@ref(tab:tbl-not-fitted) contains failed model fitting for the *Estimated FD* model. These were disregarded from further analysis. 
 
-The reason for these failed model fitting is probably in the combination of the 0 $m$ flying distance and the measurement precision of the timing gates, resulting in ill-defined model that cannot be fitted.  
+The reason for these failed model fittings is probably in the combination of the very small flying distance and the measurement precision of the timing gates, resulting in ill-defined model that cannot be fitted.  
+
+(ref:tbl-not-fitted) Failed model fittings for the *Estimated FD* model
+
+```{r tbl-not-fitted}
+not_fitted_df %>%
+knitr::kable(
+    caption = "(ref:tbl-not-fitted)",
+    digits = 2,
+    booktabs = TRUE
+  )
+```
 
 ```{r remove-missing}
 sim_res_df <- na.omit(sim_res_df)
@@ -561,7 +574,7 @@ ROPE_df <- na.omit(ROPE_df)
 
 ## Percent difference
 
-### Region of practical equivalence (`region of practical equivalence`)
+### Region of practical equivalence
 
 ```{r ROPE-limits}
 # Calculate ROPE limits
@@ -576,9 +589,9 @@ ROPE_limits <- ROPE_df %>%
 print_ROPE <- function(parameter) {
   paste0(
     round(ROPE_limits$ymin[ROPE_limits$parameter %in% parameter], 2),
-    " - ",
+    " to ",
     round(ROPE_limits$ymax[ROPE_limits$parameter %in% parameter], 2),
-    " %"
+    "%"
   )
 }
 ```
@@ -874,7 +887,7 @@ MDC_min <- sim_res_df %>%
 
 ### Lowest Minimum Detectable Change
 
-Estimated $\%MDCs_{`r confidence * 100`}^{lowest}$ are equal to `r round(MDC_min$MDC_perc[MDC_min$parameter == "MSS"], 2)`% for MSS, `r round(MDC_min$MDC_perc[MDC_min$parameter == "MAC"], 2)`% for MAC, `r round(MDC_min$MDC_perc[MDC_min$parameter == "TAU"], 2)`% for TAU, and `r round(MDC_min$MDC_perc[MDC_min$parameter == "PMAX"], 2)` for PMAX (column *lowest* in Table \@ref(tab:tbl-pooled-MDC) and dashed grey horizontal lines in Figure \@ref(fig:graph-MDC)). An interesting finding is that, given simulation parameters (particularly the precision of the timing gates to the closest `r 1000 / 10^(unique(sim_res_df$rounding))` $ms$), MSS has the lowest $\%MDCs_{`r confidence * 100`}^{lowest}$ compared to other short sprint parameters. Since $\%MDCs_{`r confidence * 100`}^{lowest}$ represents the lowest minimal detectable change, MSS is the parameter whose change could be, given this theoretical simulation, estimated with the most precision. In contrast, TAU and MAC changes can be estimated with the least precision. 
+Estimated $\%MDCs_{`r confidence * 100`}^{lowest}$ are equal to `r round(MDC_min$MDC_perc[MDC_min$parameter == "MSS"], 2)`% for MSS, `r round(MDC_min$MDC_perc[MDC_min$parameter == "MAC"], 2)`% for MAC, `r round(MDC_min$MDC_perc[MDC_min$parameter == "TAU"], 2)`% for TAU, and `r round(MDC_min$MDC_perc[MDC_min$parameter == "PMAX"], 2)`% for PMAX (column *lowest* in Table \@ref(tab:tbl-pooled-MDC) and dashed grey horizontal lines in Figure \@ref(fig:graph-MDC)). An interesting finding is that, given simulation parameters (particularly the precision of the timing gates to the closest `r 1000 / 10^(unique(sim_res_df$rounding))` $ms$), MSS has the lowest $\%MDCs_{`r confidence * 100`}^{lowest}$ compared to other short sprint parameters. Since $\%MDCs_{`r confidence * 100`}^{lowest}$ represents the lowest minimal detectable change, MSS is the parameter whose change could be, given this theoretical simulation, estimated with the most precision. In contrast, TAU and MAC changes can be estimated with the least precision. 
 
 
 ### Pooled analysis
