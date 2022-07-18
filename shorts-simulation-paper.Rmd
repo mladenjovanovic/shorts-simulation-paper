@@ -1,0 +1,1033 @@
+---
+title: "Bias in estimated short sprints profiles using timing gates due to the flying start: simulation study and proposed solutions"
+preprint: true
+date: "`r Sys.Date()`"
+author: 
+  - name: Mladen Jovanović
+    affiliation: 1
+    corresponding: true
+    email: coach.mladen.jovanovic@gmail.com
+affiliation:
+  - code: 1
+    address: Faculty of Sport and Physical Education, University of Belgrade, Serbia
+abstract: >
+  Short sprints have been modeled using the mono-exponential equation that involves two parameters: (1) maximum sprinting speed (MSS) and (2) relative acceleration (TAU), most often performed using the timing gates. I have names this the *No correction* model. Unfortunately, due to the flying start often utilized, there is a bias introduced when estimating parameters. In this paper, I have (1) proposed two additional models (*Estimated TC* and *Estimated FD*) that aim to correct this bias, and (2) provided theoretical simulation study that provides model performances in estimating parameters. In conclusion, both *Estimated TC* and *Estimated FD* models provided more precise parameter estimates, but surprisingly, the *No correction* model provided better estimates of some parameter change.
+header-includes: >
+  \usepackage{lipsum}
+  \usepackage{placeins}
+  \usepackage[htt]{hyphenat}
+  \usepackage{booktabs}
+  \usepackage{microtype}
+preamble: >
+  \usepackage{amsmath}
+citation_package: natbib
+csl: peerj.csl
+bibliography: [references.bib, packages.bib]
+output:
+  bookdown::pdf_book:
+    base_format: rticles::peerj_article # for using bookdown features like \@ref()
+    extra_dependencies: ["flafter", "float"]
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    theme: flatly
+    highlight: kate
+  rticles::peerj_article: default
+link-citations: yes
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+require(shorts)
+require(tidyverse)
+require(bookdown)
+require(directlabels)
+require(cowplot)
+require(tidytext)
+require(kableExtra)
+require(ggdist)
+require(ggh4x)
+require(bayestestR)
+
+# Color set
+color_black <- "#000000"
+color_blue <- "#5DA5DA"
+color_red <- "#F15854"
+color_grey <- "#4D4D4D"
+color_green <- "#60BD68"
+color_orange <- "#FAA43A"
+color_pink <- "#F17CB0"
+color_purple <- "#B276B2"
+color_yellow <- "#DECF3F"
+
+# Set font size for plots
+font_size <- 5
+
+# Random number seed
+my_random_seed <- 1667
+set.seed(my_random_seed)
+
+knitr::opts_chunk$set(
+  comment = "#>",
+  collapse = TRUE,
+  cache = FALSE,
+  fig.retina = 0.8, # figures are either vectors or 300 dpi diagrams
+  dpi = 300,
+  out.width = "90%",
+  fig.align = "center",
+  fig.width = 5,
+  fig.height = 5 * 0.618, # 1 / phi
+  fig.show = "hold",
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  width = 65,
+  size = "small"
+)
+
+# automatically create a bib database for R packages
+knitr::write_bib(
+  c(
+    .packages(),
+    "bookdown", "knitr", "rmarkdown", "shorts", "nlme", "LambertW", "kableExtra",
+    "cowplot", "tidytex", "minpack.lm", "kableExtra", "ggdist"
+  ),
+  "packages.bib"
+)
+
+# Set rounding
+op <- options()
+
+options(
+  digits = 3,
+  "width" = 65,
+  scipen = 999,
+  knitr.kable.NA = ""
+)
+```
+
+```{r analysis-confid}
+confidence <- 0.95
+```
+
+# Introduction
+
+Sprint speed is one of the most distinctive and admired physical characteristics in sports. In the majority of team sports (e.g., soccer, field hockey, handball, etc.), short sprints are defined as maximal sprinting from a standstill across a distance that does not result in deceleration at the finish. Peak anaerobic power is reached during the first few seconds (\<5 $s$) of maximal efforts [@mangineSpeedForcePower2014], however the capacity to attain maximal sprint speed is athlete- and sport-specific. For instance, track and field sprinters are trained to achieve maximal speed later in a race (i.e., 50-60 $m$) [@ward-smithEnergyConversionStrategies2001], whereas team sport athletes have sport-specific attributes and reach maximal speed much earlier (i.e., 30-40 $m$) [@brownAssessmentLinearSprinting2004]. The evaluation of short sprint performance is frequently included in a battery of fitness tests for a wide variety of sports, regardless of the kinematic differences between athletes.
+
+The use of force plates is regarded as the gold standard for analyzing the mechanical features of sprinting; nevertheless collecting the profile of a whole sprint presents practical and cost problems [@morinSimpleMethodComputing2019; @samozinoSimpleMethodMeasuring2016]. Radar and laser technology are frequently utilized laboratory-grade methods [@buchheitMechanicalDeterminantsAcceleration2014; @edwardsSprintAccelerationCharacteristics2020; @jimenez-reyesRelationshipVerticalHorizontal2018; @marcote-pequenoAssociationForceVelocity2019] that are typically unavailable to sports practitioners. Timing gates are unquestionably the most prevalent method available for evaluating sprint performance. Multiple gates are frequently placed at different distances to capture split times (e.g., 10, 20, 30, and 40 $m$), which can now be incorporated into the method for determining sprint mechanical properties [@morinSimpleMethodComputing2019; @samozinoSimpleMethodMeasuring2016]. Practitioners can utilize the outcomes to explain individual differences, quantify the effects of training interventions, and gain a better knowledge of the limiting variables of performance, which is an advantage of this method.
+
+## Mathematical model
+
+The mono-exponential equation \@ref(eq:velocity-time) has been used to model short sprints. It was first proposed by @doi:10.1098/rspb.1927.0035 and made more popular by @clarkNFLCombine40Yard2017 and @samozinoSimpleMethodMeasuring2016. Equation \@ref(eq:velocity-time) is the function for instantaneous horizontal velocity $v$ given time $t$ and two model parameters.
+
+```{=tex}
+\begin{equation}
+  v(t) = MSS \times (1 - e^{-\frac{t}{TAU}}) (\#eq:velocity-time)
+\end{equation}
+```
+
+*Maximum sprinting speed* (MSS; expressed in $ms-1$) and *relative acceleration* (TAU; expressed in $s$) are the parameters of the equation \@ref(eq:velocity-time). TAU represents the ratio of MSS to initial acceleration (MAC; *maximal acceleration*, expressed in $ms-2$) \@ref(eq:maximal-acceleration). Note that TAU, given the equation \@ref(eq:velocity-time), is the time required to reach a velocity equal to `r round(100 * (1 - exp(-1)), 1)`% of MSS.
+
+```{=tex}
+\begin{equation}
+  MAC = \frac{MSS}{TAU}(\#eq:maximal-acceleration)
+\end{equation}
+```
+
+Although TAU is utilized in the equations and afterward estimated, I prefer to use and report MAC because it is simpler to understand, especially for practitioners and coaches.
+
+By deriving the equation \@ref(eq:velocity-time), we may obtain the equation \@ref(eq:acceleration-time) for horizontal acceleration.
+
+```{=tex}
+\begin{equation}
+  a(t) = \frac{MSS}{TAU} \times e^{-\frac{t}{TAU}}  (\#eq:acceleration-time)
+\end{equation}
+```
+
+By integrating equation \@ref(eq:velocity-time), we get the equation for distance covered \@ref(eq:distance-time).
+
+```{=tex}
+\begin{equation}
+  d(t) = MSS \times (t + TAU \times e^{-\frac{t}{TAU}}) - MSS \times TAU  (\#eq:distance-time)
+\end{equation}
+```
+
+## Model parameters estimation using timing gates split times
+
+```{r example-parameters}
+# These are the example data parameters
+MSS <- 9
+MAC <- 8
+TAU <- MSS / MAC
+PMAX <- MSS * MAC / 4
+
+split_distance <- c(5, 10, 20, 30, 40)
+flying_distance <- 0.5
+reaction_time <- 0.2
+rounding <- 2
+
+
+# Function to create printable string for the text
+dist_str <- function(x) {
+  len <- length(x)
+
+  paste(
+    paste(x[seq(1, len - 1)], collapse = ", "),
+    x[len],
+    sep = ", and "
+  )
+}
+```
+
+Table \@ref(tab:example-split-times) contains sample split times measured during `r max(split_distance)` m sprint performance using timing gates positioned at `r dist_str(split_distance)` m. 
+
+(ref:example-split-times) Sample split times measured during `r max(split_distance)` m sprint performance using timing gates positioned at `r dist_str(split_distance)` m.
+
+```{r example-split-times}
+split_time <- predict_time_at_distance(split_distance, MSS, MAC)
+
+example_split_times <- tibble(
+  `Distance (m)` = split_distance,
+  `Split time (s)` = round(split_time, rounding)
+)
+
+knitr::kable(
+  example_split_times,
+  caption = "(ref:example-split-times)",
+  booktabs = TRUE
+)
+```
+
+To estimate model parameters using split times, distance is a *predictor* and time is the *outcome* variable; hence, equation \@ref(eq:distance-time) takes the form of the equation \@ref(eq:time-distance).
+
+```{=tex}
+\begin{equation}
+  t(d) = TAU \times W(-e^{\frac{-d}{MSS \times TAU}} - 1) + \frac{d}{MSS} + TAU (\#eq:time-distance)
+\end{equation}
+```
+
+$W$ in equation \@ref(eq:time-distance) represents Lambert's W function [@R-LambertW]. Equation \@ref(eq:distance-time), in which the time is the predictor and distance is the outcome variable, is commonly employed in research [@morinSpreadsheetSprintAcceleration2017; @morinSpreadsheetSprintAcceleration2019; @stenrothSpreadsheetSprintAcceleration2020], This method should be avoided since reversing the predictor and outcome variables in a regression model may create biased estimated parameters [@motulskyIntuitiveBiostatisticsNonmathematical2018, p. 341]. This bias may not be practically significant for profiling short sprints, but it is a statistically flawed practice and should be avoided. It is thus preferable to utilize statistically correct equation \@ref(eq:time-distance) to estimate model MSS and TAU. 
+
+Estimating MSS and TAU parameters using equation \@ref(eq:time-distance) as model definition is performed using *non-linear least squares regression*. To the best of my knowledge, scientist, researchers, and coaches have been performing short sprints modeling using the built-in solver function of Microsoft Excel (Microsoft Corporation, Redmond, Washington, United States) [@morinSpreadsheetSprintAcceleration2017; @morinSpreadsheetSprintAcceleration2019; @stenrothForcevelocityProfilingIce2020; @stenrothSpreadsheetSprintAcceleration2020; @samozinoSimpleMethodMeasuring2016; @clarkNFLCombine40Yard2017; @morinSimpleMethodComputing2019]. These, and additional functionalities, have been recently implemented in the open-source **{shorts}** package [@R-shorts; @jovanovicShortsPackageModeling2020; @vescoviSprintMechanicalCharacteristics2021] for R-language [@R-base], which utilizes the `nlsLM()` function from the **{minpack.lm}** package [@R-minpack.lm]. Compared to the built-in solver function of Microsoft Excel, **{shorts}** package represents a more powerful, flexible, transparent, and reproducible environment for modeling short sprints, and it is used in this study to estimate model parameters. 
+
+```{r simple-model}
+m1 <- model_timing_gates(
+  distance = example_split_times$`Distance (m)`,
+  time = example_split_times$`Split time (s)`
+)
+```
+
+Using the split times from Table \@ref(tab:example-split-times), estimated MSS, TAU, and MAC parameters are equal to `r round(coef(m1)[1], 2)` $ms^{-1}$, `r round(coef(m1)[2], 2)` $s$, and `r round(coef(m1)[3], 2)` $ms^{-2}$, respectively. *Maximal relative power* (PMAX; expressed in $W/kg$) is an additional parameter often estimated and reported [@morinSimpleMethodComputing2019; @samozinoSimpleMethodMeasuring2016]. PMAX is calculated using equation \@ref(eq:relative-power). This method of PMAX estimation disregards the air resistance and thus represents *net* or relative *propulsive* power. Calculated PMAX using estimated MSS and MAC parameters is equal to `r round(coef(m1)[4], 2)` $W/kg$.
+
+```{=tex}
+\begin{equation}
+  PMAX = \frac{MSS \times MAC}{4} (\#eq:relative-power)
+\end{equation}
+```
+
+## Problems with parameters estimation using split times due to flying start and reaction time
+
+To ensure accurate short sprint parameter estimates, the initial force production must be synced with start time, often reffed to as "first movement" triggering [@haugenDifferenceStartImpact2012; @haugenSprintMechanicalProperties2020; @haugenSprintRunningPerformance2016; haugenSprintMechanicalVariables2019; @haugenPowerForceVelocityProfilingSprinting2020; @samozinoSimpleMethodMeasuring2016]. This represents a challenge when collecting sprint data using timing gates and can substantially impact estimated parameters. 
+
+To demonstrate this impact, let us imagine we have three twin brothers with the same short sprint characteristics: MSS equal to `r MSS` $ms^{-1}$, TAU equal to `r TAU` $s$, MAC equal to `r MAC` $ms^{-2}$, and PMAX equal to `r PMAX` $W/kg$ (these represent *true* short sprint parameters). Let us call them Mike, Phil, and John. They all perform a `r max(split_distance)` $m$ sprint from a standing start using timing gates set at `r dist_str(split_distance)` $m$. For Mike and Phil, the timing system is activated by the initial timing gate (i.e., when they cross the beam) at the start of the sprint (i.e., $d=0$ $m$). For John, the timing system is activated after the gunfire. 
+
+Mike represents the *theoretical model*, in which we assume that the initial force production and the timing initiation are perfectly synchronized. We have already utilized Mike's split times in Table \@ref(tab:example-split-times). 
+
+On the other hand, Phil decides to move slightly behind the initial timing gate (i.e., for `r flying_distance` $m$) and use body rocking to initiate the sprint start. In other words, Phil uses a *flying start*, a common scenario when testing field sports athletes. From a measurement perspective, flying start distance is often recommended to avoid premature triggering of the timing system by lifted knees or swinging arms [@altmannAccuracySingleBeam2018; @altmannDifferentStartingDistances2015; @altmannValiditySingleBeamTiming2017; @haugenPowerForceVelocityProfilingSprinting2020; @haugenSprintRunningPerformance2016]. Flying start can also result from body rocking during the standing start. Clearly, any flying start with a difference between the initial force production and the start time can lead to skewed parameters and predictions. Since it is hard to get faster at a sprint, inconsistent starts can hide the effects of the training intervention.
+
+Since the gunfire triggers John's start, his split times have an additional reaction time of `r reaction_time` $s$. This is similar to a scenario where the athlete prematurely triggers a timing system when standing too close to the initial timing gate. We can thus use John's data to demonstrate the effects of this scenario on the estimated parameters as well.  
+
+Timing gates utilized in this theoretical example provide precision to two decimals (i.e., closest 10 $ms)$, representing a measurement error source. A graphical representation of the sprint splits can be found in Figure \@ref(fig:mike-phil-john-split-times).
+
+```{r generate-data}
+split_times <- tibble(
+  Distance = split_distance,
+  True = create_timing_gates_splits(MSS = MSS, MAC = MAC, gates = split_distance, FD = 0),
+  `Mike (theoretical)` = round(create_timing_gates_splits(MSS = MSS, MAC = MAC, gates = split_distance), rounding),
+  `Phil (flying start)` = round(create_timing_gates_splits(MSS = MSS, MAC = MAC, gates = split_distance, FD = flying_distance), rounding),
+  `John (gunfire)` = round(create_timing_gates_splits(MSS = MSS, MAC = MAC, gates = split_distance, TC = reaction_time), rounding)
+) %>%
+  pivot_longer(cols = -1, names_to = "Athlete", values_to = "Time") %>%
+  mutate(
+    Athlete = factor(
+      Athlete,
+      levels = c("True", "Mike (theoretical)", "Phil (flying start)", "John (gunfire)")
+    )
+  )
+```
+
+(ref:mike-phil-john-split-times) Phil, Mike, and John split times over a `r max(split_distance)` $m$ distance. All three brothers have identical sprint performances but utilize different sprint starts, resulting in different split times.
+
+```{r mike-phil-john-split-times, fig.cap="(ref:mike-phil-john-split-times)"}
+plot_df <- split_times %>%
+  filter(Athlete != "True")
+
+ggplot(
+  plot_df,
+  aes(x = Distance, y = Time, color = Athlete, group = Athlete)
+) +
+  theme_cowplot(font_size) +
+  geom_line() +
+  geom_point(
+    shape = 21,
+    fill = "white",
+    size = 2
+  ) +
+  xlab("Distance (m)") +
+  ylab("Time (s)") +
+  geom_dl(aes(label = paste(" ", Athlete)), method = list("last.points", cex = 0.75)) +
+  scale_color_manual(values = c(color_blue, color_orange, color_green)) +
+  scale_x_continuous(
+    limits = c(min(split_distance), max(split_distance) + 10),
+    breaks = split_distance
+  ) +
+  theme(
+    legend.title = element_blank(),
+    legend.position = "none"
+  )
+```
+
+Estimated sprint parameters can be found in Table \@ref(tab:mike-phil-john-est-params). As  seen from the results (Table \@ref(tab:mike-phil-john-est-params)), estimated short sprint parameters for all three brothers differ from the *true* parameters used to generate the data (i.e., their *true* short sprint characteristics). All three brothers have a bias in estimated parameters due to timing gates' precision to 2 decimals (i.e., 10 $ms$). Bias in estimated parameters in Phil's case is due to the flying start involved, while in John's case, it is due to the reaction time involved in the split times.
+
+(ref:mike-phil-john-est-params) Estimated sprint parameters for Mike, Phil, and John using data from Figure \@ref(fig:mike-phil-john-split-times). All three brothers have identical sprint performance but utilize different sprint starts, which results in different split times, and thus different sprint parameter estimates. Due to the timing gates' precision to 2 decimals (i.e., 10 $ms$), estimated Mike's parameters also differ from the *true* values. 
+
+```{r mike-phil-john-est-params}
+make_models <- function(df) {
+  m1 <- model_timing_gates(
+    distance = df$Distance,
+    time = df$Time
+  )
+
+  data.frame(
+    Athlete = df$Athlete[1],
+    t(coef(m1))
+  )
+}
+
+sprint_parameters <- split_times %>%
+  group_by(Athlete) %>%
+  do(make_models(.)) %>%
+  ungroup()
+
+
+knitr::kable(
+  sprint_parameters,
+  caption = "(ref:mike-phil-john-est-params)",
+  digits = 2,
+  booktabs = TRUE
+)
+```
+
+## How to overcome missing the initial force production when using timing gates?
+
+The literature suggests using a correction factor of +0.5 $s$ as a viable solution (i.e., simply adding +0.5 $s$ to split times) to convert to “first movement" triggering when utilizing recommended 0.5 $m$ flying distance behind the initial timing gate [@haugenDifferenceStartImpact2012; @haugenSprintMechanicalProperties2020; @haugenSprintRunningPerformance2016; @haugenSprintMechanicalVariables2019]. Intriguingly, the average difference between the standing start with a photocell trigger and a block start to gunfire for a 40-meter sprint was 0.27 $s$ [@haugenDifferenceStartImpact2012]. Consequently, although a timing correction factor is required to prevent further inaccuracies in estimates of kinetic variables (e.g., overestimate power), a correction factor that is too big would have the opposite effect (e.g., underestimate power).
+
+### Estimated time correction model
+
+Instead of using *apriori* time correction from the literature, this parameter may be estimated using the supplied data, together with MSS and TAU. @stenrothForcevelocityProfilingIce2020 proposes the same approach, titled the *time shift method*, and the estimated parameter, named the *time shift parameter*. In accordance with the current literature, we have termed this parameter *time correction* (TC) [@vescoviSprintMechanicalCharacteristics2021]. 
+
+Using the original equation \@ref(eq:time-distance) to implement the TC parameter now provides the new equation \@ref(eq:time-correction). Equation \@ref(eq:time-correction) is utilized as the model definition in the *Estimated TC* model, as opposed to the model using equation \@ref(eq:time-distance), which I have termed *No correction* model. The model in which TC is fixed (i.e., by simply adding TC to split times) is termed the *Fixed TC* model.
+
+```{=tex}
+\begin{equation}
+  t(d) = TAU \times W(-e^{\frac{-d}{MSS \times TAU}} - 1) + \frac{d}{MSS} + TAU - TC (\#eq:time-correction)
+\end{equation}
+```
+
+From a regression perspective, the TC parameter can be viewed as an *intercept*. It can be beneficial when we assume a fixed time shift is involved (i.e., reaction time or premature triggering of the timing equipment). If we compare the split times of Mike and John in Figure \@ref(fig:mike-phil-john-split-times), we can notice that the lines are parallel. In this scenario, the *Estimated TC* model can remove bias between Mike and John. The *Estimated TC* model can also help remove bias in estimated parameters in Phil's case. However, if we look closely at Figure \@ref(fig:mike-phil-john-split-times), we will notice that Phil's and Mike's lines are not parallel. This is because there is already some velocity when the initial timing gate is triggered; thus, the time shift is not constant.
+
+These models (i.e., *Fixed TC* of +0.3, +0.5 $s$, and *Estimate TC* model) are applied to Mike, Phil, and John's split times. The estimated model parameters can be found in Table \@ref(tab:all-estimates) and previously estimated parameter values using *No correction* model. As can be noted from Table \@ref(tab:all-estimates), adding +0.3 $s$ worked well for Phil in terms of approaching *true* parameter values, while adding +0.5 $s$ was detrimental in un-biasing estimated parameters. 
+
+The *Estimated TC* model worked well for all three athletes in terms of un-biasing the parameter estimates. The estimated TC parameter for John was also very close to the *true* reaction time of `r reaction_time` $s$. 
+
+### Estimated flying distance model
+
+Although the *Estimated TC* model performed well in Phil's case (brother doing flying start), instead of assuming time shift (which helps in un-biasing the estimates compared to the *No correction* model), we can utilize model definition that assumes *flying start distance* (FD) involved in the *data-generating-process* (DGP). This *Estimated FD* model utilizes equation \@ref(eq:distance-correction) as the model definition. 
+
+```{=tex}
+\begin{equation}
+  \begin{split}
+   t(d) &= (TAU \times W(-e^{\frac{-d + FD}{MSS \times TAU}} - 1) + \frac{d + FD}{MSS} + TAU) \\ 
+   &\quad-(TAU \times W(-e^{\frac{FD}{MSS \times TAU}} - 1) + \frac{FD}{MSS} + TAU) 
+   \end{split}
+   (\#eq:distance-correction)
+\end{equation}
+```
+
+Table \@ref(tab:all-estimates) contains all model estimates for three brothers, including the *Estimated FD* model. We can notice that the *Estimated FD* model unbiased estimates for Phil, but failed to be estimated for John (brother that starts at gunfire and has reaction time involved in his split times). This is because the *Estimated FD* model is *ill-defined* under that scenario and cannot have a *negative* flying distance. 
+
+Overall, each model definition has assumed the mechanism of the data generation. *No correction* model assumes perfect synchronization of the sprint initiation with the start of the timing.The *Estimated TC* model introduces a simple intercept that can help estimate parameters when an assumed time shift is involved (e.g., when reaction time is involved or premature triggering of the initial timing gate). *Estimated TC* can also be used when flying start is utilized, but it assumes the constant time shift, which is not the case in that scenario due to already gained velocity at the start. The *Estimated FD* model assumes there is a flying sprint involved in the DGP and, as shown in Table \@ref(tab:all-estimates), can be ill-defined when there is no flying distance involved, but there is a time shift. All three models assume athlete accelerates according to the mono-exponential equation \@ref(eq:velocity-time).
+
+This work aims to explore the behavior of these three models under simulated and known conditions. This is needed to provide a theoretical understanding of the limits and expected errors of the short sprints modeling, which can later inform more practical studies involving athletes.
+
+(ref:all-estimates) Estimated sprint parameters for Mike, Phil, and John using data from Figure \@ref(fig:mike-phil-john-split-times) using *No correction*, *Fixed time corrections* (TC), *Estimated TC*, and *Estimated FD* models. 
+
+```{r all-estimates}
+# function to return NULL if models cannot be created
+tryNULL <- function(expr) {
+  result <- NULL
+  tryCatch(result <- expr, error = function(e) e)
+  result
+}
+
+make_models <- function(df) {
+  message(paste(df$Athlete[1], "\n"))
+  m1 <- tryNULL(model_timing_gates(
+    distance = df$Distance,
+    time = df$Time + 0.3
+  ))
+
+  m2 <- tryNULL(model_timing_gates(
+    distance = df$Distance,
+    time = df$Time + 0.5
+  ))
+
+  m3 <- tryNULL(model_timing_gates_TC(
+    distance = df$Distance,
+    time = df$Time
+  ))
+
+  m4 <- tryNULL(model_timing_gates_FD(
+    distance = df$Distance,
+    time = df$Time
+  ))
+
+  m1_coef <- coef(m1)
+  m2_coef <- coef(m2)
+  m3_coef <- coef(m3)
+  m4_coef <- coef(m4)
+
+  # Check if models are NULL
+  if (is.null(m1_coef)) {
+    m1_coef <- c("MSS" = NA, "TAU" = NA, "MAC" = NA, "PMAX" = NA, "FD" = NA)
+  }
+
+  if (is.null(m2_coef)) {
+    m2_coef <- c("MSS" = NA, "TAU" = NA, "MAC" = NA, "PMAX" = NA, "FD" = NA)
+  }
+
+  if (is.null(m3_coef)) {
+    m3_coef <- c("MSS" = NA, "TAU" = NA, "MAC" = NA, "PMAX" = NA, "FD" = NA)
+  }
+
+  if (is.null(m4_coef)) {
+    m4_coef <- c("MSS" = NA, "TAU" = NA, "MAC" = NA, "PMAX" = NA, "FD" = NA)
+  }
+
+  rbind(
+    data.frame(
+      Model = "Fixed +0.3s TC",
+      Athlete = df$Athlete[1],
+      t(c(m1_coef, "TC" = NA, "FD" = NA))
+    ),
+    data.frame(
+      Model = "Fixed +0.5s TC",
+      Athlete = df$Athlete[1],
+      t(c(m2_coef, "TC" = NA, "FD" = NA))
+    ),
+    data.frame(
+      Model = "Estimated TC",
+      Athlete = df$Athlete[1],
+      t(c(m3_coef, "FD" = NA))
+    ),
+    data.frame(
+      Model = "Estimated FD",
+      Athlete = df$Athlete[1],
+      t(c(m4_coef, "TC" = NA))
+    )
+  )
+}
+
+sprint_TC_parameters <- split_times %>%
+  filter(Athlete != "True") %>%
+  group_by(Athlete) %>%
+  do(make_models(.)) %>%
+  ungroup()
+
+print_df <- full_join(
+  data.frame(
+    Model = "No correction",
+    sprint_parameters %>%
+      filter(Athlete != "True")
+  ),
+  sprint_TC_parameters
+) %>%
+  full_join(
+    data.frame(
+      Model = "True",
+      sprint_parameters %>%
+        filter(Athlete == "True")
+    )
+  ) %>%
+  mutate(
+    Model = factor(Model, levels = c("True", "No correction", "Fixed +0.3s TC", "Fixed +0.5s TC", "Estimated TC", "Estimated FD"))
+  ) %>%
+  arrange(Model, Athlete)
+
+knitr::kable(
+  print_df,
+  caption = "(ref:all-estimates)",
+  digits = 2,
+  booktabs = TRUE
+) %>%
+  collapse_rows(columns = 1, latex_hline = "major")
+```
+
+# Methods
+
+## Simulation design
+
+```{r load-simulated-data}
+# Load data set
+load("simulation-results.RData")
+```
+
+In this simulation, data is generated using *true* MSS (ranging from `r min(sim_res_df$MSS)` to `r max(sim_res_df$MSS)` $ms^-1$, in increments of `r mean(diff(unique(sim_res_df$MSS)))` $ms^-1$, resulting in a total of `r length(unique(sim_res_df$MSS))` unique values), MAC (ranging from `r min(sim_res_df$MAC)` to `r max(sim_res_df$MAC)` $ms^-2$, in increments of `r mean(diff(unique(sim_res_df$MAC)))` $ms^-2$, resulting in a total of `r length(unique(sim_res_df$MAC))` unique values), and flying distance (ranging from `r min(sim_res_df$flying_distance)` to `r max(sim_res_df$flying_distance)` $m$, in increments of `r mean(diff(unique(sim_res_df$flying_distance)))` $m$, resulting in a total of `r length(unique(sim_res_df$flying_distance))` unique values). Each flying sprint distance consists of `r formatC(length(unique(sim_res_df$MSS)) * length(unique(sim_res_df$MAC)), format="f", big.mark=",", digits=0)` MSS and MAC combinations. 
+
+Splits times are estimated using timing gates positioned at `r dist_str(str_split(unique(sim_res_df$split_distances), ",", simplify = TRUE))` $m$, with the rounding to the closest `r 1000 / 10^(unique(sim_res_df$rounding))` $ms$. In total, there are `r formatC(length(unique(sim_res_df$MSS)) * length(unique(sim_res_df$MAC)) * length(unique(sim_res_df$flying_distance)) * length(unique(sim_res_df$split_distances)) * length(unique(sim_res_df$rounding)), format="f", big.mark=",", digits=0)` sprints simulated. 
+
+## Statistical analysis
+
+MSS, MAC, TAU, and PMAX are estimated for each simulated sprint using *No correction*, *Estimated TC*, and *Estimated FD models*. The agreement between *true* and estimated parameter values is evaluated using the *percent difference* ($\%Diff$) estimator (equation \@ref(eq:percent-difference)).
+
+```{=tex}
+\begin{equation}
+  \%Diff = 100 \times \frac{estimated - true}{true}  (\#eq:percent-difference)
+\end{equation}
+```
+
+The distribution of the simulated $\%Diff$ is summarized using $median$ and `r confidence * 100`% *highest-density continuous interval* ($HDCI$) [@kruschkeBayesianDataAnalysis2018; @kruschkeBayesianNewStatistics2018; @kruschkeDoingBayesianData2015; @kruschkeRejectingAcceptingParameter2018; @makowskiBayestestRDescribingEffects2019].
+
+To provide magnitude interpretation of the $\%Diff$, *region of practical equivalence* ($ROPE$), as well as the proportion of the simulations that lie within  $ROPE$ ($inside \; ROPE$; expressed as percentage) [@kruschkeBayesianDataAnalysis2018; @kruschkeBayesianNewStatistics2018; @kruschkeDoingBayesianData2015; @kruschkeRejectingAcceptingParameter2018; @jovanovicBmbstatsBootstrapMagnitudebased2020; @makowskiBayestestRDescribingEffects2019], are calculated. For the purpose of this paper, $ROPE$ is assumed to be equal to `r confidence * 100`% $HDCI$ of the $\%Diff$ using the *No correction* model and no flying distance. Theoretically, $ROPE$ represents the lowest error (i.e., the best agreement) that can be achieved. It is limited purely by the timing gates measurement precision (i.e., rounding to the closest `r 1000 / 10^(unique(sim_res_df$rounding))` $ms$) and simulated parameters. 
+
+In addition to estimating agreement between *true* and estimated parameter values, practitioners are often interested in whether they can use estimated measures to track changes in the *true* measures. A *minimal detectable change* estimator with `r confidence * 100`% confidence ($\%MDC_{`r confidence * 100`}$) [@jovanovicBmbstatsBootstrapMagnitudebased2020; @furlanApplicabilityStandardError2018] is utilized to estimate this precision. The $\%MDC_{`r confidence * 100`}$ value might be regarded as the minimum amount of change that needs to be observed in the estimated parameter for it to be considered a *true* change. 
+
+In this study, $\%MDC_{`r confidence * 100`}$ is calculated using *percent residual standard error* ($\%RSE$; equation \@ref(eq:percent-rse)) of the linear regression between *true* (predictor) and estimated parameter values (outcome) (equation \@ref(eq:smallest-detectable-change)). Since simulated data with the known *true* values are utilized, $\%RSE$ represents the *percent standard error of the measurement* ($\%SEM$) in the estimated parameters. 
+
+```{=tex}
+\begin{equation}
+  \%RSE = \sqrt{\frac{\sum_{i=1}^N{(100 \times \frac{y_i - \hat{y_i}}{\hat{y_i}})^2}}{N-2}}  (\#eq:percent-rse)
+\end{equation}
+```
+
+```{=tex}
+\begin{equation}
+  \%MDC_{`r confidence * 100`} = \%RSE \times \sqrt{2} \times `r round(qnorm(1-(1-confidence)/2), 2)`  (\#eq:smallest-detectable-change)
+\end{equation}
+```
+
+In addition to providing $\%MDC_{`r confidence * 100`}$ for the estimated parameters, the lowest  $\%MDC_{`r confidence * 100`}$ is estimated using the *No correction* model and no flying distance ($\%MDC_{`r confidence * 100`}^{lowest}$). Theoretically, $\%MDC_{`r confidence * 100`}^{lowest}$ represents the lowest $\%MDC_{`r confidence * 100`}$ that can be achieved, and it is limited purely by the timing gates measurement precision (i.e., rounding to the closest `r 1000 / 10^(unique(sim_res_df$rounding))` $ms$) and simulated parameters. $\%MDC_{`r confidence * 100`}^{lowest}$ is used only as a reference to evaluate estimated parameters' $\%MDC_{`r confidence * 100`}$.
+
+The analyses, as mentioned earlier, are performed on both *pooled* dataset (i.e., using all flying distance) and across every flying distance. It is hypothesized that the *Estimated FD* model will have the highest $inside \; ROPE$ estimates and the lowest $\%MDC_{`r confidence * 100`}$ estimates.
+
+Statistical analyses and graph construction were performed using the software R `r paste0(R.Version()$major, ".", R.Version()$minor)` [@R-base] in RStudio (version 2022.02.3).
+
+# Results
+
+## Model fitting
+
+```{r not-fitted}
+# Not fitted models
+not_fitted_df <- sim_res_df %>%
+  group_by(MSS, MAC, flying_distance, split_distances, rounding, model) %>%
+  summarise(
+    not_fitted = any(is.na(estimate)),
+    fitted = !not_fitted
+  ) %>%
+  ungroup() %>%
+  group_by(flying_distance, model) %>%
+  summarise(
+    `Not fitted` = sum(not_fitted),
+    `Fitted` = sum(fitted),
+    Total = `Not fitted` + `Fitted`,
+    `Not fitted (%)` = 100 * `Not fitted` / Total
+  ) %>%
+  ungroup() %>%
+  filter(`Not fitted` > 0) %>%
+  rename(`Flying distance (m)` = flying_distance, Model = model) %>%
+  select(Model, `Flying distance (m)`, `Not fitted`, Total, `Not fitted (%)`)
+```
+
+Out of `r formatC(not_fitted_df$Total, format="f", big.mark=",", digits=0)` simulations for 0 $m$ flying distance, *estimated FD* model was not been able to be fitted for `r formatC(not_fitted_df$"Not fitted", format="f", big.mark=",", digits=0)` simulations, or `r round(not_fitted_df$"Not fitted (%)", 0)`%. These were disregarded from further analysis. 
+
+The reason for these failed model fitting is probably in the combination of the 0 $m$ flying distance and the measurement precision of the timing gates, resulting in ill-defined model that cannot be fitted.  
+
+```{r remove-missing}
+sim_res_df <- na.omit(sim_res_df)
+ROPE_df <- na.omit(ROPE_df)
+```
+
+## Percent difference
+
+### Region of practical equivalence (`region of practical equivalence`)
+
+```{r ROPE-limits}
+# Calculate ROPE limits
+ROPE_limits <- ROPE_df %>%
+  group_by(parameter) %>%
+  summarise(
+    median_hdci(diff_perc, .width = confidence)
+  ) %>%
+  ungroup()
+
+# Function for printing inside the code
+print_ROPE <- function(parameter) {
+  paste0(
+    round(ROPE_limits$ymin[ROPE_limits$parameter %in% parameter], 2),
+    " - ",
+    round(ROPE_limits$ymax[ROPE_limits$parameter %in% parameter], 2),
+    " %"
+  )
+}
+```
+
+Estimated ROPEs are equal to `r print_ROPE("MSS")` for MSS, `r print_ROPE("MAC")` for MAC, `r print_ROPE("TAU")` for TAU, and `r print_ROPE("PMAX")` for PMAX (Table \@ref(tab:tbl-ROPE-pooled) and grey horizontal bars in Figures \@ref(fig:graph-ROPE-pooled) and \@ref(fig:graph-per-FD)). An interesting finding is that, given simulation parameters (particularly the precision of the timing gates to the closest `r 1000 / 10^(unique(sim_res_df$rounding))` $ms$), MSS has the lowest $ROPE$ compared to other short sprint parameters. Since $ROPE$ represents the lowest estimation error, MSS is the parameter that could be, given this theoretical simulation, estimated with the most precision. In contrast, TAU and MAC can be estimated with the least precision. 
+
+### Pooled analysis
+
+```{r calculate-inside-ROPE-pooled}
+inside_ROPE_pooled <- sim_res_df %>%
+  left_join(ROPE_limits, by = "parameter") %>%
+  group_by(model, parameter) %>%
+  summarise(
+    `ROPE (%)` = paste0(round(ymin[[1]], 2), " to ", round(ymax[[1]], 2), "%"),
+    inside_ROPE = rope(diff_perc, range = c(ymin[[1]], ymax[[1]]), ci = 1)$ROPE_Percentage,
+    `Inside ROPE (%)` = paste0(round(100 * inside_ROPE, 0), "%"),
+    median_hdci(diff_perc)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    `% Diff` = paste0(.point, " ", round(y, 0), "%, ", .width * 100, "% ", toupper(.interval), " [", round(ymin, 0), " to ", round(ymax, 0), "%]")
+  ) %>%
+  arrange(parameter, model) %>%
+  rename(Parameter = parameter, Model = model)
+
+
+# Function for printing inside the code
+print_inside_ROPE <- function(model) {
+  inside_ROPE_pooled %>%
+    filter(Model %in% model) %>%
+    summarise(
+      min_inside = round(100 * min(inside_ROPE), 0),
+      max_inside = round(100 * max(inside_ROPE), 0),
+      `Inside ROPE (%)` = paste0("from ", min_inside, " to ", max_inside, "%")
+    ) %>%
+    pluck("Inside ROPE (%)")
+}
+
+print_median <- function(model) {
+  inside_ROPE_pooled %>%
+    filter(Model %in% model) %>%
+    summarise(
+      min_median = round(min(y), 0),
+      max_median = round(max(y), 0),
+      median = paste0("from ", min_median, " to ", max_median, "%")
+    ) %>%
+    pluck("median")
+}
+
+print_HDCI <- function(model) {
+  inside_ROPE_pooled %>%
+    filter(Model %in% model) %>%
+    summarise(
+      min_HDCI = round(min(ymin), 0),
+      max_HDCI = round(max(ymax), 0),
+      HDCI = paste0("from ", min_HDCI, " to ", max_HDCI, "%")
+    ) %>%
+    pluck("HDCI")
+}
+```
+
+The pooled analysis is performed using all flying distances pooled together. As such, the pooled analysis represents the overall estimate of the agreement between *true* and estimated parameter values across simulated conditions. 
+
+Figure \@ref(fig:graph-ROPE-pooled) depicts the distribution of the pooled $\%Diff$. As expected, the *Estimated FD* model performed with the highest $inside \; ROPE$ parameter values (`r print_inside_ROPE("Estimated FD")`), with the most narrow `r confidence * 100`% $HDCI$s (`r print_HDCI ("Estimated FD")`), and no bias involved. 
+
+On the other hand, the *No correction* model performed poorly, with the lowest inside $ROPE$ parameter values (`r print_inside_ROPE("No correction")`), with the widest `r confidence * 100`% $HDCI$s (`r print_HDCI ("No correction")`), and with the apparent bias indicated with the $median$ parameter values being outside of $ROPE$ (`r print_median("No correction")`). In addition, visual inspection of Figure \@ref(fig:graph-ROPE-pooled) indicates a *non-normal* distribution of estimated $\%Diff$ parameter values, demanding further analysis across flying distance values.
+
+The *Estimated TC* model performed similarly to the *Estimated FD* model with slightly lower $inside \; ROPE$ parameter values (`r print_inside_ROPE("Estimated TC")`), wider `r confidence * 100`% $HDCI$s (`r print_HDCI("Estimated TC")`), and with obvious bias, although much smaller than the *No correction* model bias (`r print_median("Estimated TC")`). 
+
+Table \@ref(tab:tbl-ROPE-pooled) contains the pooled analysis results summary for every model and short sprint parameter. 
+
+(ref:graph-ROPE-pooled) Pooled distribution of the $\%Diff$. Error bars represent the distribution $median$ and `r confidence * 100`% $HDCI$. A grey area represents parameter $ROPE$ (assumed to be equal to `r confidence * 100`% $HDCI$ of the $\%Diff$ using *No correction* model and no flying distance).
+
+```{r graph-ROPE-pooled, fig.cap="(ref:graph-ROPE-pooled)"}
+ggplot() +
+  theme_cowplot(font_size) +
+  stat_halfeye(
+    data = sim_res_df,
+    aes(x = model, y = diff_perc, fill = model),
+    normalize = "groups", trim = FALSE, scale = 0.9,
+    size = 0.05 * 10,
+    point_size = 0.05 * 10,
+    # fatten_point = 1.2,
+    .width = confidence, point_interval = median_hdci,
+    alpha = 0.8
+  ) +
+  geom_rect(
+    data = ROPE_limits,
+    aes(ymin = ymin, ymax = ymax, xmin = -Inf, xmax = Inf), fill = color_grey, alpha = 0.3
+  ) +
+  facet_wrap(~parameter, scales = "free") +
+  # facet_grid2(model ~ parameter, scales = "free_y", independent = "y", drop = TRUE) +
+  scale_fill_manual(values = c(
+    "No correction" = color_blue,
+    "Estimated TC" = color_green,
+    "Estimated FD" = color_orange
+  )) +
+  ylab("% Diff") +
+  xlab(NULL) +
+  theme(legend.position = "none")
+```
+
+(ref:tbl-ROPE-pooled) $ROPE$s, a summary of $\%Diff$ distribution, and $inside \; ROPE$ for pooled analysis.
+
+```{r tbl-ROPE-pooled}
+inside_ROPE_pooled %>%
+  select(
+    Parameter, `ROPE (%)`, Model, `% Diff`, `Inside ROPE (%)`
+  ) %>%
+  knitr::kable(
+    caption = "(ref:tbl-ROPE-pooled)",
+    digits = 2,
+    booktabs = TRUE,
+    align = c("l", "r", "l", "r", "r")
+  ) %>%
+  kableExtra::collapse_rows(columns = 1:2)
+```
+
+### Analysis across flying distances
+
+```{r inside-ROPE-per-FD}
+inside_ROPE_per_FD <- sim_res_df %>%
+  left_join(ROPE_limits, by = "parameter") %>%
+  group_by(model, parameter, flying_distance) %>%
+  rename(Model = model) %>%
+  summarise(
+    inside_ROPE = rope(diff_perc, range = c(ymin[[1]], ymax[[1]]), ci = 1)$ROPE_Percentage,
+    `ROPE (%)` = paste(round(ymin[[1]], 2), "to", round(ymax[[1]], 2)),
+    `Inside ROPE (%)` = 100 * inside_ROPE,
+    median_hdci(diff_perc)
+  ) %>%
+  ungroup()
+
+# Function for printing inside the code
+print_inside_ROPE <- function(model) {
+  inside_ROPE_per_FD %>%
+    filter(Model == model) %>%
+    summarise(
+      min_inside = round(100 * min(inside_ROPE), 0),
+      max_inside = round(100 * max(inside_ROPE), 0),
+      `Inside ROPE (%)` = paste0("from ", min_inside, " to ", max_inside, "%")
+    ) %>%
+    pluck("Inside ROPE (%)")
+}
+
+print_median <- function(model) {
+  inside_ROPE_per_FD %>%
+    filter(Model == model) %>%
+    summarise(
+      min_median = round(min(y), 0),
+      max_median = round(max(y), 0),
+      median = paste0("from ", min_median, " to ", max_median, "%")
+    ) %>%
+    pluck("median")
+}
+
+print_HDCI <- function(model) {
+  inside_ROPE_per_FD %>%
+    filter(Model == model) %>%
+    summarise(
+      min_HDCI = round(min(ymin), 0),
+      max_HDCI = round(max(ymax), 0),
+      HDCI = paste0("from ", min_HDCI, " to ", max_HDCI, "%")
+    ) %>%
+    pluck("HDCI")
+}
+```
+
+Figure \@ref(fig:graph-per-FD) depicts the esults of the analysis for every flying distance in the simulation. $inside \; ROPE$ parameter estimates are calculated and depicted in Figure \@ref(fig:graph-inside-ROPE) for easier comprehension. 
+
+As expected, the *No correction* model demonstrated increasing bias as the flying distance increases (`r print_median("No correction")`), the widest `r confidence * 100`% $HDCI$s (`r print_HDCI("No correction")`), and the lowest $inside \; ROPE$ estimated parameter values. 
+
+*Estimated TC* showed a small bias trend across flying distances (`r print_median("Estimated TC")`), resulting in decreasing $inside \; ROPE$ performance (`r print_inside_ROPE("Estimated TC")`; see Figure \@ref(fig:graph-inside-ROPE)), although with much smaller `r confidence * 100`% $HDCI$s (`r print_HDCI("Estimated TC")`) compared to *No correction* model. 
+
+*Estimated FD*, as hypothesized, showed no bias and thus a stable $inside \; ROPE$ performance across flying distances (see Figure \@ref(fig:graph-inside-ROPE)), with minimal `r confidence * 100`% $HDCI$s (`r print_HDCI("Estimated FD")`).
+
+(ref:graph-per-FD) Distribution of the $\%Diff$ across every flying distance in the simulation. Error bars represent the distribution $median$ and `r confidence * 100`% $HDCI$. A grey area represents parameter $ROPE$ (assumed to be equal to `r confidence * 100`% $HDCI$ of the $\%Diff$ using *No correction* model and no flying distance). For the less crowded visualization, flying distance in increments of 0.05 $m$ is plotted. 
+
+```{r graph-per-FD, fig.cap="(ref:graph-per-FD)"}
+plot_diff_per_FD <- function(sim_res_df, ROPE_limits) {
+  # Filter flying distance to have every 5 cm
+  FD <- as.character(seq(
+    from = min(sim_res_df$flying_distance),
+    to = max(sim_res_df$flying_distance),
+    by = 0.05))
+  
+  sim_res_df <- sim_res_df %>%
+    mutate(flying_distance_str = as.character(flying_distance)) %>%
+    filter(flying_distance_str %in% FD)
+  
+  ggplot() +
+    theme_cowplot(font_size) +
+    stat_halfeye(
+      data = sim_res_df,
+      aes(x = flying_distance, y = diff_perc, fill = model),
+      normalize = "groups", trim = FALSE, scale = 0.7,
+      size = 0.05,
+      point_size = 0.05,
+      # fatten_point = 1.2,
+      .width = confidence, point_interval = median_hdci,
+      alpha = 0.8
+    ) +
+    geom_rect(
+      data = ROPE_limits,
+      aes(ymin = ymin, ymax = ymax, xmin = -Inf, xmax = Inf), fill = color_grey, alpha = 0.3
+    ) +
+    facet_grid2(model ~ parameter, scales = "free_y", independent = "y", drop = TRUE) +
+    scale_fill_manual(values = c(
+      "No correction" = color_blue,
+      "Estimated TC" = color_green,
+      "Estimated FD" = color_orange
+    )) +
+    ylab("% Diff") +
+    xlab("Flying distance (m)") +
+    theme(legend.position = "none")
+}
+
+plot_diff_per_FD(sim_res_df, ROPE_limits)
+```
+
+(ref:graph-inside-ROPE) $inside \; ROPE$ estimated across every flying distance in the simulation. 
+
+```{r graph-inside-ROPE, fig.cap="(ref:graph-inside-ROPE)"}
+inside_ROPE_per_FD %>%
+  ggplot(aes(x = flying_distance, y = `Inside ROPE (%)`, color = Model)) +
+  theme_cowplot(font_size) +
+  geom_point(size = 0.5) +
+  geom_line(alpha = 0.8) +
+  facet_wrap(~parameter) +
+  geom_dl(aes(label = paste(" ", Model)), method = list("last.bumpup", cex = 0.4)) +
+  scale_color_manual(values = c(
+    "No correction" = color_blue,
+    "Estimated TC" = color_green,
+    "Estimated FD" = color_orange
+  )) +
+  ylab("Inside ROPE (%)") +
+  xlab("Flying distance (m)") +
+  theme(legend.position = "none") +
+  scale_x_continuous(
+    # breaks = unique(inside_ROPE_per_FD$flying_distance),
+    limits = c(min(inside_ROPE_per_FD$flying_distance), 1.3 * max(inside_ROPE_per_FD$flying_distance))
+  )
+```
+
+## Minimal detectable change
+
+```{r estimated-MDC}
+# Estimate MDC
+make_analysis <- function(df) {
+  m1 <- lm(estimate ~ true, df)
+
+  resid <- residuals(m1)
+  resid_perc <- 100 * (resid / predict(m1))
+
+  # Residual standard error
+  rse_perc <- sqrt(sum(resid_perc^2) / (length(resid_perc) - 2))
+
+  mdc_perc <- rse_perc * sqrt(2) * qnorm(1 - (1 - confidence) / 2)
+
+  # Log model
+  # Not used, since it provides similar results as m1 model
+  # Provided here for the reference only
+  true_log <- log(df$true) * 100
+  estimate_log <- log(df$estimate) * 100
+  m2 <- lm(estimate_log ~ true_log)
+
+  mdc_log <- exp(summary(m2)$sigma * sqrt(2) * 1.96 / 100)
+  mdc_log_perc <- (mdc_log - 1) * 100
+
+  tibble(
+    MDC_perc = mdc_perc,
+    MDC_log_perc = mdc_log_perc
+  )
+}
+
+MDC_pooled <- sim_res_df %>%
+  group_by(model, parameter) %>%
+  do(make_analysis(.)) %>%
+  ungroup()
+
+MDC_per_FD <- sim_res_df %>%
+  group_by(flying_distance, model, parameter) %>%
+  do(make_analysis(.)) %>%
+  ungroup()
+
+
+MDC_min <- sim_res_df %>%
+  filter(model == "No correction", flying_distance == 0) %>%
+  group_by(parameter) %>%
+  do(make_analysis(.)) %>%
+  ungroup()
+```
+
+### Lowest Minimum Detectable Change
+
+Estimated $\%MDCs_{`r confidence * 100`}^{lowest}$ are equal to `r round(MDC_min$MDC_perc[MDC_min$parameter == "MSS"], 2)`% for MSS, `r round(MDC_min$MDC_perc[MDC_min$parameter == "MAC"], 2)`% for MAC, `r round(MDC_min$MDC_perc[MDC_min$parameter == "TAU"], 2)`% for TAU, and `r round(MDC_min$MDC_perc[MDC_min$parameter == "PMAX"], 2)` for PMAX (column *lowest* in Table \@ref(tab:tbl-pooled-MDC) and dashed grey horizontal lines in Figure \@ref(fig:graph-MDC)). An interesting finding is that, given simulation parameters (particularly the precision of the timing gates to the closest `r 1000 / 10^(unique(sim_res_df$rounding))` $ms$), MSS has the lowest $\%MDCs_{`r confidence * 100`}^{lowest}$ compared to other short sprint parameters. Since $\%MDCs_{`r confidence * 100`}^{lowest}$ represents the lowest minimal detectable change, MSS is the parameter whose change could be, given this theoretical simulation, estimated with the most precision. In contrast, TAU and MAC changes can be estimated with the least precision. 
+
+
+### Pooled analysis
+
+```{r}
+print_MDC <- function(model) {
+  MDC_pooled %>%
+    rename(Model = model) %>%
+    filter(Model %in% model) %>%
+    summarise(
+      min_MDC = round(min(MDC_perc), 0),
+      max_MDC = round(max(MDC_perc), 0),
+      MDC = paste0("from ", min_MDC, " to ", max_MDC, "%")
+    ) %>%
+    pluck("MDC")
+}
+
+print_MDC_param <- function(param) {
+  MDC_pooled %>%
+    filter(parameter %in% param) %>%
+    summarise(
+      min_MDC = round(min(MDC_perc), 0),
+      max_MDC = round(max(MDC_perc), 0),
+      MDC = paste0("from ", min_MDC, " to ", max_MDC, "%")
+    ) %>%
+    pluck("MDC")
+}
+```
+
+Pooled $\%MDCs_{`r confidence * 100`}$ represents an estimate of the *sensitivity* to detect *true* change with `r confidence * 100`% confidence when the flying start distance is not standardized (but within simulation parameter limits (ranging from `r min(sim_res_df$flying_distance)` to `r max(sim_res_df$flying_distance)` $m$). As expected, the *No correction* model demonstrates the highest $\%MDCs_{`r confidence * 100`}$ (`r print_MDC("No correction")`), while *Estimated TC* and *Estimated FD* demonstrated much smaller $\%MDCs_{`r confidence * 100`}$ (`r print_MDC("Estimated TC")` and `r print_MDC("Estimated FD")`, respectively) (Table \@ref(tab:tbl-pooled-MDC)). 
+
+An interesting finding is that the MSS parameter showed very low $\%MDCs_{`r confidence * 100`}$ across models (`r print_MDC_param("MSS")`), even for the *No correction* model. This indicates that even the non-standardized short sprint monitoring (i.e., without standardized flying distance) using the *No correction* model, given simulation parameters, can be used to track changes in MSS. TAU, MAC, and PMAX parameters, on the other hand, demand much larger $\%MDCs_{`r confidence * 100`}$ (`r print_MDC_param("TAU")`, `r print_MDC_param("MAC")`, and `r print_MDC_param("PMAX")`, respectively). 
+
+(ref:tbl-pooled-MDC) Pooled $\%MDCs_{`r confidence * 100`}$ estimated using pooled simulation dataset.
+
+```{r tbl-pooled-MDC}
+MDC_min %>%
+  mutate(
+    model = "lowest",
+    MDC_perc = paste(round(MDC_perc, 2), "%")
+  ) %>%
+  pivot_wider(id_cols = parameter, names_from = "model", values_from = "MDC_perc") %>%
+  rename(Parameter = parameter) %>%
+  left_join(
+    MDC_pooled %>%
+      mutate(MDC_perc = paste(round(MDC_perc, 0), "%")) %>%
+      pivot_wider(id_cols = parameter, names_from = "model", values_from = "MDC_perc") %>%
+      rename(Parameter = parameter),
+    by = "Parameter"
+  ) %>%
+  knitr::kable(
+    caption = "(ref:tbl-pooled-MDC)",
+    digits = 2,
+    booktabs = TRUE,
+    align = c("l", "r", "r", "r")
+  )
+```
+
+
+### Analysis across flying distances
+
+```{r}
+print_MDC <- function(model) {
+  MDC_per_FD %>%
+    rename(Model = model) %>%
+    filter(Model %in% model) %>%
+    summarise(
+      min_MDC = round(min(MDC_perc), 0),
+      max_MDC = round(max(MDC_perc), 0),
+      MDC = paste0("from ", min_MDC, " to ", max_MDC, "%")
+    ) %>%
+    pluck("MDC")
+}
+
+
+print_MDC_param <- function(model, param) {
+  MDC_per_FD %>%
+    rename(Model = model) %>%
+    filter(Model %in% model, parameter %in% param) %>%
+    summarise(
+      min_MDC = round(min(MDC_perc), 0),
+      max_MDC = round(max(MDC_perc), 0),
+      MDC = paste0("from ", min_MDC, " to ", max_MDC, "%")
+    ) %>%
+    pluck("MDC")
+}
+
+print_MDC_param_only <- function(param) {
+  MDC_per_FD %>%
+    filter(parameter %in% param) %>%
+    summarise(
+      min_MDC = round(min(MDC_perc), 0),
+      max_MDC = round(max(MDC_perc), 0),
+      MDC = paste0("from ", min_MDC, " to ", max_MDC, "%")
+    ) %>%
+    pluck("MDC")
+}
+```
+
+When estimated across flying distances, $\%MDCs_{`r confidence * 100`}$ shows interesting and surprising patterns (Figure \@ref(fig:graph-MDC)). For every short sprint parameter, *Estimated TC* showed stable and lower $\%MDCs_{`r confidence * 100`}$ compared to *Estimated FD* (`r print_MDC("Estimated TC")` and `r print_MDC("Estimated FD")`, respectively). This is surprising because even if it has biased estimates of short sprint parameters (see [Percent difference] results section, mainly Figure \@ref(fig:graph-inside-ROPE)) compared to the *Estimated FD*, *Estimated TC* might be more sensitive to detect *changes*, given simulation parameters. 
+
+Another surprising finding is that the *No correction* model, even if shown to be highly biased in estimating short sprint parameter values (see [Percent difference] results section, mainly Figure \@ref(fig:graph-per-FD)), showed the lowest $\%MDCs_{`r confidence * 100`}$ for the MAC and TAU parameters (`r print_MDC_param("No correction", "MAC")` and `r print_MDC_param("No correction", "TAU")` respectively). This indicates that, when short sprint measurement is standardized (i.e., athlete perform with the same flying distance), given the simulation parameters, the *No correction* model can be the most sensitive model to detect *changes* in MAC and TAU parameters. This is the case for the MSS and PMAX parameters (`r print_MDC_param("No correction", "MSS")` and `r print_MDC_param("No correction", "PMAX")`, respectively). 
+
+When it comes to estimating *changes* in short sprint parameters, *change* in MSS is the most sensitive to be detected (`r print_MDC_param_only("MSS")`) compared to MAC (`r print_MDC_param_only("MAC")`), TAU (`r print_MDC_param_only("TAU")`), and PMAX (`r print_MDC_param_only("PMAX")`). 
+
+(ref:graph-MDC) Estimated $\%MDCs_{`r confidence * 100`}$ across every flying distance in the simulation. The dashed line represents $\%MDCs_{`r confidence * 100`}^{lowest}$
+
+```{r graph-MDC, fig.cap="(ref:graph-MDC)"}
+# Line chart
+ggplot() +
+  theme_cowplot(font_size) +
+  geom_hline(data = MDC_min, aes(yintercept = MDC_perc), linetype = "dashed", alpha = 0.5, size = 0.5) +
+  geom_point(data = MDC_per_FD, aes(x = flying_distance, y = MDC_perc, color = model), size = 0.5) +
+  geom_line(data = MDC_per_FD, aes(x = flying_distance, y = MDC_perc, color = model)) +
+  geom_dl(data = MDC_per_FD, aes(x = flying_distance, y = MDC_perc, color = model, label = paste0("  ", model)), method = list("last.bumpup", cex = 0.4)) +
+  facet_wrap(~parameter, scales = "free_y") +
+  scale_x_continuous(
+    #  breaks = unique(MDC_per_FD$flying_distance),
+    limits = c(min(MDC_per_FD$flying_distance), 1.3 * max(MDC_per_FD$flying_distance))
+  ) +
+  xlab("Flying distance (m)") +
+  ylab("Minimal Detectable Change (%)") +
+  scale_color_manual(values = c(
+    "No correction" = color_blue,
+    "Estimated TC" = color_green,
+    "Estimated FD" = color_orange
+  )) +
+  theme(legend.position = "none")
+```
+
+# Conclusion
+
+The simulation study employed in this paper demonstrated some expected and unexpected theoretical findings. Among the expected findings are (1) the bias and low $inside \; ROPE$ performance in estimating short sprint parameters using the *No correction* model, (2) more negligible bias and higher $inside \; ROPE$ for the *Estimated TC* model, and (3) no bias and highest $inside \; ROPE$ for the *Estimated FD* model. 
+
+The unexpected finding of this study is the performance of the *No correction* model in sensitivity of estimating the *change* of the MAC and TAU parameters, which outperformed the other two models. 
+
+When estimating short sprint parameters across models, given simulation parameters, MSS and *change* in MSS can be estimated more precisely compared to TAU, MAC, and PMAX parameters and their *changes*.
+
+In addition to model performances, this simulation study provided the $ROPE$s and $\%MDCs_{`r confidence * 100`}^{lowest}$. These could be useful for further validity and reliability studies evaluating short sprint model performance involving *real* athletes and timing gates positioned at the same distances with the same rounding.
+
+The take-away message for the practitioners is that besides standardizing the sprint starting technique for the short sprint performance monitoring, it would be wise to utilize and track the results of all three models. The *Estimated FD* model will provide unbiased estimates of the current performance, but the *No correction* model might be more sensitive in detecting changes in TAU and MAC parameters. 
+
+This practical conclusion should be taken with caution, since it based on the results of this theoretical simulation. Additional studies involving *real* athletes in evaluating the performance of these three models are needed. These should involve estimating the short sprint parameters agreement between gold-standard (i.e., *criterion*) measure (e.g., radar gun, laser gun, or video analysis) and *practical* timing gates measure. One such study is currently in preparation. In addition to theoretical findings, such a study will provide model performance estimates when biological variability is involved in short sprints, which is not considered in the current study. 
+
+```{r include=FALSE}
+# Return original options
+options(op)
+```
+
+\FloatBarrier
+
+# Supplemental material
+
+The *R Markdown* [@R-bookdown; @R-rmarkdown; @rmarkdown2018; @rmarkdown2020] source code for this paper and analysis can be found on the GitHub repository: <https://github.com/mladenjovanovic/shorts-simulation-paper>.
+
+# References
