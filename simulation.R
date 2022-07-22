@@ -139,7 +139,8 @@ get_estimates <- function(df) {
 # Run the simulations
 sim_res_df <- sim_params_df %>%
   rowwise() %>%
-  do(get_estimates(.))
+  do(get_estimates(.)) %>%
+  ungroup()
 
 # Add true values
 true_params <- sim_params_df %>%
