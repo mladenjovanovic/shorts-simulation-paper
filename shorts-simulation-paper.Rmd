@@ -1,6 +1,6 @@
 ---
 title: "Bias in estimated short sprint profiles using timing gates due to the flying start: simulation study and proposed solutions"
-preprint: true
+preprint: false
 date: "`r Sys.Date()`"
 author: 
   - name: Mladen Jovanović

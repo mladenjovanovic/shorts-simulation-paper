@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.8.18)  31 AUG 2022 18:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.8.18)  31 AUG 2022 19:00
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -901,7 +901,7 @@ File: omsptm.fd
 LaTeX Font Info:    Font shape `OMS/ptm/b/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/b/n' tried instead on input line 182.
 [2]
-<shorts-simulation-paper_files/figure-latex/mike-phil-john-split-times-1.pdf, id=213, 361.35pt x 222.8325pt>
+<shorts-simulation-paper_files/figure-latex/mike-phil-john-split-times-1.pdf, id=219, 361.35pt x 222.8325pt>
 File: shorts-simulation-paper_files/figure-latex/mike-phil-john-split-times-1.pdf Graphic file (type pdf)
 <use shorts-simulation-paper_files/figure-latex/mike-phil-john-split-times-1.pdf>
 Package pdftex.def Info: shorts-simulation-paper_files/figure-latex/mike-phil-john-split-times-1.pdf  used on input line 209.
@@ -913,7 +913,7 @@ LaTeX Font Info:    Font shape `OT1/phv/b/it' in size <9> not available
 Underfull \vbox (badness 1117) has occurred while \output is active []
 
 [7]
-<shorts-simulation-paper_files/figure-latex/graph-ROPE-pooled-1.pdf, id=348, 361.35pt x 222.8325pt>
+<shorts-simulation-paper_files/figure-latex/graph-ROPE-pooled-1.pdf, id=363, 361.35pt x 222.8325pt>
 File: shorts-simulation-paper_files/figure-latex/graph-ROPE-pooled-1.pdf Graphic file (type pdf)
 <use shorts-simulation-paper_files/figure-latex/graph-ROPE-pooled-1.pdf>
 Package pdftex.def Info: shorts-simulation-paper_files/figure-latex/graph-ROPE-pooled-1.pdf  used on input line 419.
@@ -923,23 +923,26 @@ Overfull \hbox (30.37129pt too wide) in paragraph at lines 432--461
  [][] 
  []
 
-<shorts-simulation-paper_files/figure-latex/graph-per-FD-1.pdf, id=353, 361.35pt x 222.8325pt>
+<shorts-simulation-paper_files/figure-latex/graph-per-FD-1.pdf, id=368, 361.35pt x 222.8325pt>
 File: shorts-simulation-paper_files/figure-latex/graph-per-FD-1.pdf Graphic file (type pdf)
 <use shorts-simulation-paper_files/figure-latex/graph-per-FD-1.pdf>
 Package pdftex.def Info: shorts-simulation-paper_files/figure-latex/graph-per-FD-1.pdf  used on input line 478.
 (pdftex.def)             Requested size: 373.61061pt x 230.39388pt.
-<shorts-simulation-paper_files/figure-latex/graph-inside-ROPE-1.pdf, id=354, 361.35pt x 222.8325pt>
+<shorts-simulation-paper_files/figure-latex/graph-inside-ROPE-1.pdf, id=369, 361.35pt x 222.8325pt>
 File: shorts-simulation-paper_files/figure-latex/graph-inside-ROPE-1.pdf Graphic file (type pdf)
 <use shorts-simulation-paper_files/figure-latex/graph-inside-ROPE-1.pdf>
 Package pdftex.def Info: shorts-simulation-paper_files/figure-latex/graph-inside-ROPE-1.pdf  used on input line 489.
 (pdftex.def)             Requested size: 373.61061pt x 230.39388pt.
 [8] [9 <./shorts-simulation-paper_files/figure-latex/graph-ROPE-pooled-1.pdf>] [10 <./shorts-simulation-paper_files/figure-latex/graph-per-FD-1.pdf> <./shorts-simulation-paper_files/figure-latex/graph-inside-ROPE-1.pdf>]
-<shorts-simulation-paper_files/figure-latex/graph-MDC-1.pdf, id=419, 361.35pt x 222.8325pt>
+<shorts-simulation-paper_files/figure-latex/graph-MDC-1.pdf, id=434, 361.35pt x 222.8325pt>
 File: shorts-simulation-paper_files/figure-latex/graph-MDC-1.pdf Graphic file (type pdf)
 <use shorts-simulation-paper_files/figure-latex/graph-MDC-1.pdf>
 Package pdftex.def Info: shorts-simulation-paper_files/figure-latex/graph-MDC-1.pdf  used on input line 542.
 (pdftex.def)             Requested size: 373.61061pt x 230.39388pt.
 [11] [12 <./shorts-simulation-paper_files/figure-latex/graph-MDC-1.pdf>]
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 638.
+
 Underfull \hbox (badness 10000) in paragraph at lines 661--663
 \OT1/ptm/m/it/10 (+20) at []https://jbmorin.net/2017/12/13/a-spreadsheet-for-sprint-acceleration-force-velocity-power-
  []
@@ -957,18 +960,18 @@ Package rerunfilecheck Info: File `shorts-simulation-paper.out' has not changed.
 (rerunfilecheck)             Checksum: 1EED68C7692154B4E107BEA037F88471;4613.
  ) 
 Here is how much of TeX's memory you used:
- 19246 strings out of 479638
- 324434 string characters out of 5877192
- 766543 words of memory out of 5000000
- 36912 multiletter control sequences out of 15000+600000
- 537096 words of font info for 360 fonts, out of 8000000 for 9000
+ 19273 strings out of 479638
+ 324760 string characters out of 5877192
+ 769574 words of memory out of 5000000
+ 36922 multiletter control sequences out of 15000+600000
+ 540308 words of font info for 372 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 87i,12n,91p,1876b,514s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 87i,11n,91p,1876b,610s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.enc}</Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvbo8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on shorts-simulation-paper.pdf (14 pages, 794384 bytes).
+Output written on shorts-simulation-paper.pdf (14 pages, 799452 bytes).
 PDF statistics:
- 593 PDF objects out of 1000 (max. 8388607)
- 531 compressed objects within 6 object streams
+ 613 PDF objects out of 1000 (max. 8388607)
+ 551 compressed objects within 6 object streams
  124 named destinations out of 1000 (max. 500000)
- 86226 words of extra memory for PDF output out of 89155 (max. 10000000)
+ 94418 words of extra memory for PDF output out of 106986 (max. 10000000)
 
