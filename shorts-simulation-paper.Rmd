@@ -1025,8 +1025,6 @@ This practical conclusion should be taken with caution, since it based on the re
 options(op)
 ```
 
-\FloatBarrier
-
 # Supplemental material
 
 The *R Markdown* [@R-bookdown; @R-rmarkdown; @rmarkdown2018; @rmarkdown2020] source code for this paper and analysis can be found on the GitHub repository: <https://github.com/mladenjovanovic/shorts-simulation-paper>.

@@ -1,18 +1,18 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.8.18)  31 AUG 2022 19:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.9.1)  1 SEP 2022 13:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **shorts-simulation-paper.tex
 (./shorts-simulation-paper.tex
 LaTeX2e <2022-06-01> patch level 5
-L3 programming layer <2022-08-05> (./wlpeerj.cls
+L3 programming layer <2022-08-30> (./wlpeerj.cls
 Document Class: wlpeerj 18/08/2016, v1.2
 (/Users/mladenjovanovic/Library/TinyTeX/texmf-dist/tex/latex/base/inputenc.sty
 Package: inputenc 2021/02/14 v1.3d Input encoding file
 \inpenc@prehook=\toks16
 \inpenc@posthook=\toks17
 ) (/Users/mladenjovanovic/Library/TinyTeX/texmf-dist/tex/generic/babel/babel.sty
-Package: babel 2022/07/20 3.78 The Babel package
+Package: babel 2022/08/29 3.79 The Babel package
 \babel@savecnt=\count185
 \U@D=\dimen138
 \l@unhyphenated=\language3
@@ -333,9 +333,9 @@ Package: enumitem 2019/06/20 v3.9 Customized lists
 )
 \tocsep=\skip70
 (/Users/mladenjovanovic/Library/TinyTeX/texmf-dist/tex/latex/lipsum/lipsum.sty (/Users/mladenjovanovic/Library/TinyTeX/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty (/Users/mladenjovanovic/Library/TinyTeX/texmf-dist/tex/latex/l3kernel/expl3.sty
-Package: expl3 2022-08-05 L3 programming layer (loader) 
+Package: expl3 2022-08-30 L3 programming layer (loader) 
 (/Users/mladenjovanovic/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
-File: l3backend-pdftex.def 2022-08-05 L3 backend support: PDF output (pdfTeX)
+File: l3backend-pdftex.def 2022-08-30 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count297
 \l__pdf_internal_box=\box56
 ))
@@ -941,9 +941,9 @@ Package pdftex.def Info: shorts-simulation-paper_files/figure-latex/graph-MDC-1.
 (pdftex.def)             Requested size: 373.61061pt x 230.39388pt.
 [11] [12 <./shorts-simulation-paper_files/figure-latex/graph-MDC-1.pdf>]
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 638.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 636.
 
-Underfull \hbox (badness 10000) in paragraph at lines 661--663
+Underfull \hbox (badness 10000) in paragraph at lines 659--661
 \OT1/ptm/m/it/10 (+20) at []https://jbmorin.net/2017/12/13/a-spreadsheet-for-sprint-acceleration-force-velocity-power-
  []
 
@@ -960,15 +960,15 @@ Package rerunfilecheck Info: File `shorts-simulation-paper.out' has not changed.
 (rerunfilecheck)             Checksum: 1EED68C7692154B4E107BEA037F88471;4613.
  ) 
 Here is how much of TeX's memory you used:
- 19273 strings out of 479638
- 324760 string characters out of 5877192
- 769574 words of memory out of 5000000
- 36922 multiletter control sequences out of 15000+600000
+ 19276 strings out of 477035
+ 324821 string characters out of 5826727
+ 810264 words of memory out of 5000000
+ 39525 multiletter control sequences out of 15000+600000
  540308 words of font info for 372 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 87i,11n,91p,1876b,610s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 87i,12n,91p,1876b,610s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.enc}</Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvbo8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></Users/mladenjovanovic/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on shorts-simulation-paper.pdf (14 pages, 799452 bytes).
+Output written on shorts-simulation-paper.pdf (14 pages, 799457 bytes).
 PDF statistics:
  613 PDF objects out of 1000 (max. 8388607)
  551 compressed objects within 6 object streams
