@@ -9,13 +9,6 @@ date:  "`r Sys.Date()`"
 date-format: short
 abstract: >
   Short sprints have been modeled using the mono-exponential equation that involves two parameters: (1) maximum sprinting speed (MSS) and (2) relative acceleration (TAU), most often performed using the timing gates. I have named this the *No correction* model. Unfortunately, due to the often utilized flying start, a bias is introduced when estimating parameters. In this paper, I have (1) proposed two additional models (*Estimated TC* and *Estimated FD*) that aim to correct this bias, and (2) provided a theoretical simulation study that provides model performances in estimating parameters. In conclusion, both *Estimated TC* and *Estimated FD* models provided more precise parameter estimates, but surprisingly, the *No correction* model provided better estimates of some parameter changes.
-author: 
-    name: Mladen Jovanović
-    affiliation: Faculty of Sport and Physical Education, University of Belgrade, Serbia
-    corresponding: true
-    email: coach.mladen.jovanovic@gmail.com
-date:  "`r Sys.Date()`"
-date-format: short
 title-block-banner: true
 bibliography: [references.bib, packages.bib]
 link-citations: true
