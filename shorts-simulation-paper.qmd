@@ -62,7 +62,7 @@ set.seed(my_random_seed)
 knitr::opts_chunk$set(
   comment = "#>",
   collapse = TRUE,
-  cache = FALSE,
+  cache = TRUE,
   fig.retina = 0.8, # figures are either vectors or 300 dpi diagrams
   dpi = 300,
   out.width = "90%",
@@ -1009,6 +1009,6 @@ options(op)
 
 # Supplemental material
 
-The *Quarto* source code for this paper and analysis can be found on the GitHub repository: <https://github.com/mladenjovanovic/shorts-simulation-paper>.
+The *Quarto* [@Allaire_Quarto_2022] source code for this paper and analysis can be found on the GitHub repository: <https://github.com/mladenjovanovic/shorts-simulation-paper>.
 
 # References
