@@ -8,7 +8,7 @@ author:
 date:  "`r Sys.Date()`"
 date-format: short
 abstract: >
-  Short sprints have been modeled using the mono-exponential equation that involves two parameters: (1) maximum sprinting speed (MSS) and (2) relative acceleration (TAU), most often performed using the timing gates. This model is named the *No correction* model. Unfortunately, due to the often utilized flying start, a bias is introduced when estimating parameters. In this paper, (1) two additional models are proposed (*Estimated TC* and *Estimated FD*) that aim to correct this bias, and (2) a theoretical simulation study that provides model performances in estimating parameters is provided. In conclusion, both *Estimated TC* and *Estimated FD* models provided more precise parameter estimates, but surprisingly, the *No correction* model provided better estimates of certain parameter changes.
+  Short sprints have been modeled using the mono-exponential equation that involves two parameters: (1) maximum sprinting speed (MSS) and (2) relative acceleration (TAU), most often performed using the timing gates. In this study, this model is termed the *No correction* model. Unfortunately, due to the often utilized flying start, a bias is introduced when estimating parameters. In this paper, (1) two additional models are proposed (*Estimated TC* and *Estimated FD*) that aim to correct this bias, and (2) a theoretical simulation study that provides model performances in estimating parameters is provided. In conclusion, both *Estimated TC* and *Estimated FD* models provided more precise parameter estimates, but surprisingly, the *No correction* model provided better estimates of specific parameter changes.
 title-block-banner: true
 bibliography: [references.bib, packages.bib]
 link-citations: true
@@ -197,7 +197,7 @@ m1 <- model_timing_gates(
 )
 ```
 
-Using the split times from @tbl-example-split-times, estimated MSS, TAU, and MAC parameters are equal to `r round(coef(m1)[1], 2)` $ms^{-1}$, `r round(coef(m1)[2], 2)` $s$, and `r round(coef(m1)[3], 2)` $ms^{-2}$, respectively. *Maximal relative power* (PMAX; expressed in $W/kg$) is an additional parameter often estimated and reported [@morinSimpleMethodComputing2019; @samozinoSimpleMethodMeasuring2016]. PMAX is calculated using @eq-relative-power. This method of PMAX estimation disregards the air resistance and thus represents *net* or relative *propulsive* power. Calculated PMAX using estimated MSS and MAC parameters equal to `r round(coef(m1)[4], 2)` $W/kg$.
+Using the split times from @tbl-example-split-times, estimated MSS, TAU, and MAC parameters equal to `r round(coef(m1)[1], 2)` $ms^{-1}$, `r round(coef(m1)[2], 2)` $s$, and `r round(coef(m1)[3], 2)` $ms^{-2}$, respectively. *Maximal relative power* (PMAX; expressed in $W/kg$) is an additional parameter often estimated and reported [@morinSimpleMethodComputing2019; @samozinoSimpleMethodMeasuring2016]. PMAX is calculated using @eq-relative-power. This method of PMAX estimation disregards the air resistance and thus represents *net* or relative *propulsive* power. Calculated PMAX using estimated MSS and MAC parameters equal to `r round(coef(m1)[4], 2)` $W/kg$.
 
 $$
   PMAX = \frac{MSS \times MAC}{4} 
@@ -214,7 +214,7 @@ Mike represents the *theoretical model*, in which it is assumed that the initial
 
 On the other hand, Phil decides to move slightly behind the initial timing gate (i.e., for `r flying_distance` $m$) and use body rocking to initiate the sprint start. In other words, Phil uses a *flying start*, a common scenario when testing field sports athletes. From a measurement perspective, flying start distance is often recommended to avoid premature triggering of the timing system by lifted knees or swinging arms [@altmannAccuracySingleBeam2018; @altmannDifferentStartingDistances2015; @altmannValiditySingleBeamTiming2017; @haugenPowerForceVelocityProfilingSprinting2020; @haugenSprintRunningPerformance2016]. Flying start can also result from body rocking during the standing start. Clearly, any flying start with a difference between the initial force production and the start time can lead to skewed parameters and predictions. Since it is hard to get faster at a sprint, inconsistent starts can hide the effects of the training intervention.
 
-Since the gunfire triggers John's start, his split times have an additional reaction time of `r reaction_time` $s$. This is similar to a scenario where the athlete prematurely triggers a timing system when standing too close to the initial timing gate. John's data can be thus used to demonstrate the effects of this scenario on the estimated parameters.
+Since the gunfire triggers John's start, his split times have an additional reaction time of `r reaction_time` $s$. This is similar to a scenario where the athlete prematurely triggers a timing system when standing too close to the initial timing gate. John's data can thus be used to demonstrate the effects of this scenario on the estimated parameters.
 
 Timing gates utilized in this theoretical example provide precision to two decimals (i.e., closest 10 $ms)$, representing a measurement error source. A graphical representation of the sprint splits can be found in @fig-mike-phil-john-split-times.
 
@@ -305,13 +305,13 @@ The literature suggests using a correction factor of +0.5 $s$ as a viable soluti
 
 Instead of using *apriori* time correction from the literature, this parameter may be estimated using the supplied data, together with MSS and TAU. @stenrothForcevelocityProfilingIce2020 propose the same approach, titled the *time shift method*, and the estimated parameter, named the *time shift parameter*. In accordance with the current literature, this parameter is termed *time correction* (TC) [@vescoviSprintMechanicalCharacteristics2021].
 
-Using the original @eq-time-distance to implement the TC parameter now yields the new @eq-time-correction. @eq-time-correction is utilized as the model definition in the *Estimated TC* model, as opposed to the model using @eq-time-distance, which is termed *No correction* model thorough this study. The model in which TC is fixed (i.e., by simply adding TC to split times) is termed the *Fixed TC* model.
+Using the original @eq-time-distance to implement the TC parameter now yields the new @eq-time-correction. @eq-time-correction is utilized as the model definition in the *Estimated TC* model, as opposed to the model using @eq-time-distance, which is termed the *No correction* model in this study. The model in which TC is fixed (i.e., by simply adding TC to split times) is termed the *Fixed TC* model.
 
 $$
   t(d) = TAU \times W(-e^{\frac{-d}{MSS \times TAU}} - 1) + \frac{d}{MSS} + TAU - TC 
 $$ {#eq-time-correction}
 
-From a regression perspective, the TC parameter can be viewed as an *intercept*. It can be beneficial when assuming fixed time shift involved (i.e., reaction time or premature triggering of the timing equipment). Comparing the split times of Mike and John in @fig-mike-phil-john-split-times, it can be noticed that the lines are parallel. In this scenario, the *Estimated TC* model can remove bias between Mike and John. The *Estimated TC* model can also help remove bias in estimated parameters in Phil's case. However, when looking closely at @fig-mike-phil-john-split-times, it can be noticed that Phil's and Mike's lines are not parallel. This is because there is already some velocity when the initial timing gate is triggered; thus, the time shift is not constant.
+From a regression perspective, the TC parameter can be viewed as an *intercept*. It can be beneficial when assuming a fixed time shift is involved (i.e., reaction time or premature triggering of the timing equipment). Comparing the split times of Mike and John in @fig-mike-phil-john-split-times, it can be noticed that the lines are parallel. In this scenario, the *Estimated TC* model can remove bias between Mike and John. The *Estimated TC* model can also help remove bias in estimated parameters in Phil's case. However, when looking closely at @fig-mike-phil-john-split-times, it can be noticed that Phil's and Mike's lines are not parallel. This is because there is already some velocity when the initial timing gate is triggered; thus, the time shift is not constant.
 
 These models (i.e., *Fixed TC* of +0.3, +0.5 $s$, and *Estimate TC* model) are applied to Mike, Phil, and John's split times. The estimated model parameters can be found in @tbl-all-estimates) and previously estimated parameter values using the *No correction* model. As can be noted from @tbl-all-estimates, adding +0.3 $s$ worked well for Phil in terms of approaching *true* parameter values, while adding +0.5 $s$ was detrimental in un-biasing estimated parameters.
 
@@ -319,7 +319,7 @@ The *Estimated TC* model worked well for all three athletes in terms of un-biasi
 
 ### Estimated flying distance model
 
-Although the *Estimated TC* model performed well in Phil's case (twin brother doing flying start), instead of assuming time shift (which helps in un-biasing the estimates compared to the *No correction* model), model definition that assumes *flying start distance* (FD) involved in the *data-generating-process* (DGP) can be utilized. This *Estimated FD* model utilizes @eq-distance-correction as the model definition.
+Although the *Estimated TC* model performed well in Phil's case (twin brother doing flying start), instead of assuming time shift (which helps in un-biasing the estimates compared to the *No correction* model), the model definition that assumes *flying start distance* (FD) involved in the *data-generating-process* (DGP) can be utilized. This *Estimated FD* model utilizes @eq-distance-correction as the model definition.
 
 $$
 \begin{split}
@@ -328,7 +328,7 @@ $$
 \end{split}
 $$ {#eq-distance-correction}
 
-@tbl-all-estimates contains all model estimates for three brothers, including the *Estimated FD* model. It can noticed that the *Estimated FD* model unbiased estimates for Phil but failed to be estimated for John (brother that starts at gunfire and has reaction time involved in his split times). This is because the *Estimated FD* model is *ill-defined* under that scenario and cannot have a *negative* flying distance.
+@tbl-all-estimates contains all model estimates for three brothers, including the *Estimated FD* model. It can be noticed that the *Estimated FD* model unbiased estimates for Phil but failed to be estimated for John (brother that starts at gunfire and has reaction time involved in his split times). This is because the *Estimated FD* model is *ill-defined* under that scenario and cannot have a *negative* flying distance.
 
 Overall, each model definition has assumed the mechanism of the data generation. *No correction* model assumes perfect synchronization of the sprint initiation with the start of the timing. The *Estimated TC* model introduces a simple intercept that can help estimate parameters when an assumed time shift is involved (e.g., when reaction time is involved or premature triggering of the initial timing gate). *Estimated TC* can also be used when flying start is utilized, but it assumes the constant time shift, which is not the case in that scenario due to already gained velocity at the start. The *Estimated FD* model assumes there is a flying sprint involved in the DGP and, as shown in @tbl-all-estimates, can be ill-defined when there is no flying distance involved, but there is a time shift. All three models assume athlete accelerates according to the mono-exponential @eq-velocity-time.
 
@@ -459,7 +459,7 @@ load("simulation-results.RData")
 
 In this simulation, data is generated using *true* MSS (ranging from `r min(sim_res_df$MSS)` to `r max(sim_res_df$MSS)` $ms^-1$, in increments of `r mean(diff(unique(sim_res_df$MSS)))` $ms^-1$, resulting in a total of `r length(unique(sim_res_df$MSS))` unique values), MAC (ranging from `r min(sim_res_df$MAC)` to `r max(sim_res_df$MAC)` $ms^-2$, in increments of `r mean(diff(unique(sim_res_df$MAC)))` $ms^-2$, resulting in a total of `r length(unique(sim_res_df$MAC))` unique values), and flying distance (ranging from `r min(sim_res_df$flying_distance)` to `r max(sim_res_df$flying_distance)` $m$, in increments of `r mean(diff(unique(sim_res_df$flying_distance)))` $m$, resulting in a total of `r length(unique(sim_res_df$flying_distance))` unique values). Each flying sprint distance consists of `r formatC(length(unique(sim_res_df$MSS)) * length(unique(sim_res_df$MAC)), format="f", big.mark=",", digits=0)` MSS and MAC combinations.
 
-Splits times are estimated using timing gates positioned at `r dist_str(str_split(unique(sim_res_df$split_distances), ",", simplify = TRUE))` $m$, with the rounding to the closest `r 1000 / 10^(unique(sim_res_df$rounding))` $ms$. In total, there are `r formatC(length(unique(sim_res_df$MSS)) * length(unique(sim_res_df$MAC)) * length(unique(sim_res_df$flying_distance)) * length(unique(sim_res_df$split_distances)) * length(unique(sim_res_df$rounding)), format="f", big.mark=",", digits=0)` sprints simulated.
+Split times are estimated using timing gates positioned at `r dist_str(str_split(unique(sim_res_df$split_distances), ",", simplify = TRUE))` $m$, with the rounding to the closest `r 1000 / 10^(unique(sim_res_df$rounding))` $ms$. In total, there are `r formatC(length(unique(sim_res_df$MSS)) * length(unique(sim_res_df$MAC)) * length(unique(sim_res_df$flying_distance)) * length(unique(sim_res_df$split_distances)) * length(unique(sim_res_df$rounding)), format="f", big.mark=",", digits=0)` sprints simulated.
 
 ## Statistical analysis
 
@@ -519,13 +519,14 @@ not_fitted_df <- sim_res_df %>%
 
 @tbl-not-fitted contains failed model fitting for the *Estimated FD* model. These were disregarded from further analysis.
 
-The reason for these failed model fittings is probably in the combination of the very small flying distance and the measurement precision of the timing gates, resulting in ill-defined model that cannot be fitted.
+The reason for these failed model fittings is probably the combination of the very small flying distance and the measurement precision of the timing gates, resulting in an ill-defined model that cannot be fitted.
 
 ```{r tbl-not-fitted}
 #| label: tbl-not-fitted
 #| tbl-cap: Failed model fittings for the *Estimated FD* model
 
 not_fitted_df %>%
+  select(-Model) %>%
   knitr::kable(
     digits = 2,
     booktabs = TRUE
@@ -624,7 +625,7 @@ The pooled analysis is performed using all flying distances pooled together. As 
 
 On the other hand, the *No correction* model performed poorly, with the lowest inside $ROPE$ parameter values (`r print_inside_ROPE("No correction")`), with the widest `r confidence * 100`% $HDCI$s (`r print_HDCI ("No correction")`), and with the apparent bias indicated with the $median$ parameter values being outside of $ROPE$ (`r print_median("No correction")`). In addition, visual inspection of @fig-graph-ROPE-pooled indicates a *non-normal* distribution of estimated $\%Diff$ parameter values, demanding further analysis across flying distance values.
 
-The *Estimated TC* model performed similarly to the *Estimated FD* model with slightly lower $inside \; ROPE$ parameter values (`r print_inside_ROPE("Estimated TC")`), wider `r confidence * 100`% $HDCI$s (`r print_HDCI("Estimated TC")`), and with obvious bias, although much smaller than the *No correction* model bias (`r print_median("Estimated TC")`).
+The *Estimated TC* model performed similarly to the *Estimated FD* model with a slightly lower $inside \; ROPE$ parameter values (`r print_inside_ROPE("Estimated TC")`), wider `r confidence * 100`% $HDCI$s (`r print_HDCI("Estimated TC")`), and with obvious bias, although much smaller than the *No correction* model bias (`r print_median("Estimated TC")`).
 
 @tbl-ROPE-pooled contains the pooled analysis results summary for every model and short sprint parameter.
 
@@ -729,7 +730,7 @@ print_HDCI <- function(model) {
 }
 ```
 
-@fig-graph-per-FD depicts the results of the analysis for every flying distance in the simulation. $inside \; ROPE$ parameter estimates are calculated and depicted in @fig-graph-inside-ROPE for easier comprehension.
+@fig-graph-per-FD depicts the analysis results for every flying distance in the simulation. $inside \; ROPE$ parameter estimates are calculated and depicted in @fig-graph-inside-ROPE for easier comprehension.
 
 As expected, the *No correction* model demonstrated increasing bias as the flying distance increases (`r print_median("No correction")`), the widest `r confidence * 100`% $HDCI$s (`r print_HDCI("No correction")`), and the lowest $inside \; ROPE$ estimated parameter values.
 
@@ -998,11 +999,11 @@ The unexpected finding of this study is the performance of the *No correction* m
 
 When estimating short sprint parameters across models, given simulation parameters, MSS and *change* in MSS can be estimated more precisely compared to TAU, MAC, and PMAX parameters and their *changes*.
 
-In addition to model performances, this simulation study provided the $ROPE$s and $\%MDCs_{`r confidence * 100`}^{lowest}$. These could be useful for further validity and reliability studies evaluating short sprint model performance involving *real* athletes and timing gates positioned at the same distances with the same rounding.
+In addition to model performances, this simulation study provided the $ROPE$s and $\%MDCs_{`r confidence * 100`}^{lowest}$. These could be useful for further validity and reliability studies evaluating short sprint model performance involving *real* athletes and timing gates positioned at the exact distances with the exact rounding.
 
-The take-away message for the practitioners is that besides standardizing the sprint starting technique for the short sprint performance monitoring, it would be wise to utilize and track the results of all three models. The *Estimated FD* model will provide unbiased estimates of the current performance, but the *No correction* model might be more sensitive in detecting changes in TAU and MAC parameters.
+The takeaway message for the practitioners is that besides standardizing the sprint starting technique for the short sprint performance monitoring, it would be wise to utilize and track the results of all three models. The *Estimated FD* model will provide unbiased estimates of the current performance, but the *No correction* model might be more sensitive in detecting changes in TAU and MAC parameters.
 
-This practical conclusion should be taken with caution, since it based on the results of this theoretical simulation. Additional studies involving *real* athletes in evaluating the performance of these three models are needed. These should involve estimating the short sprint parameters agreement between gold-standard (i.e., *criterion*) measure (e.g., radar gun, laser gun, or video analysis) and *practical* timing gates measure. One such study is currently in preparation. In addition to theoretical findings, such a study will provide model performance estimates when biological variability is involved in short sprints, which is not considered in the current study.
+This practical conclusion should be taken with caution since it is based on the results of this theoretical simulation. Additional studies involving *real* athletes in evaluating the performance of these three models are needed. These should involve estimating the short sprint parameters agreement between gold-standard (i.e., *criterion*) measure (e.g., radar gun, laser gun, or video analysis) and *practical* timing gates measure. One such study is currently in preparation. In addition to theoretical findings, such a study will provide model performance estimates when biological variability is involved in short sprints, which is not considered in the current study.
 
 ```{r include=FALSE}
 # Return original options
