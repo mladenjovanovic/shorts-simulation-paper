@@ -13,7 +13,7 @@ title-block-banner: true
 bibliography: [references.bib, packages.bib]
 link-citations: true
 citation_package: natbib
-csl: "apa-6th-edition.csl"
+csl: "tf-cse.csl"
 crossref:
   eq-prefix: Equation
   eq-labels: arabic
@@ -991,7 +991,7 @@ ggplot() +
   theme(legend.position = "none")
 ```
 
-# Conclusion
+# Discussion
 
 The simulation study employed in this paper demonstrated some expected and unexpected theoretical findings. Among the expected findings are (1) the bias and low $inside \; ROPE$ performance in estimating short sprint parameters using the *No correction* model, (2) more negligible bias and higher $inside \; ROPE$ for the *Estimated TC* model, and (3) no bias and highest $inside \; ROPE$ for the *Estimated FD* model.
 
@@ -1010,8 +1010,12 @@ This practical conclusion should be taken with caution since it is based on the 
 options(op)
 ```
 
-# Supplemental material
+# Data availability statement
 
-The *Quarto* [@Allaire_Quarto_2022] source code for this paper and analysis can be found on the GitHub repository: <https://github.com/mladenjovanovic/shorts-simulation-paper>.
+The data that support the findings of this study are openly available in Github repository at <https://github.com/mladenjovanovic/shorts-simulation-paper> (DOI: 10.5281/zenodo.7094284), as well as the the reproducible *Quarto* [@Allaire_Quarto_2022] source code.
+
+# Declaration of interest statement
+
+The author report there are no competing interests to declare
 
 # References
