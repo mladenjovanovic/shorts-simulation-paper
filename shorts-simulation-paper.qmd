@@ -62,7 +62,7 @@ set.seed(my_random_seed)
 knitr::opts_chunk$set(
   comment = "#>",
   collapse = TRUE,
-  cache = TRUE,
+  cache = FALSE,
   fig.retina = 0.8, # figures are either vectors or 300 dpi diagrams
   dpi = 1200,
   out.width = "90%",
